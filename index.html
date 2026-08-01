@@ -802,7 +802,6 @@
   async function pollForUpdates(){
     if(!API_BASE || !API_KEY) return;
     setSyncDot('syncing');
-    const previousCount = MOCK_TXNS.length;
     const previousIds = new Set(MOCK_TXNS.map(t => t.id));
 
     const ok = await refreshFromBackend();
@@ -811,15 +810,22 @@
       return; // stay quiet on transient failures; next poll will retry
     }
 
-    const hasNewTxn = MOCK_TXNS.some(t => !previousIds.has(t.id)) || MOCK_TXNS.length !== previousCount;
+    const newTxns = MOCK_TXNS.filter(t => !previousIds.has(t.id));
 
-    if(hasNewTxn){
+    if(newTxns.length > 0){
       // Re-render whatever the user is currently looking at, without
       // yanking them to a different tab or replaying unrelated animations.
       renderHome();
       if(currentPage === 'expenses') renderExpenses();
       if(currentPage === 'income') renderIncome();
       setSyncDot('synced');
+
+      // Prompt to tag any new, untagged debit transactions — same banner
+      // used for the "simulate payment" demo button. Only debits get tagged;
+      // credits (top-ups) don't need a category. Queue them if more than
+      // one arrived since the last poll, so they don't overlap.
+      const toTag = newTxns.filter(t => t.type === 'debit' && !t.tag);
+      queuePaymentAlerts(toTag);
     } else {
       setSyncDot('idle');
     }
@@ -1180,6 +1186,23 @@
     });
   }
 
+  let alertQueue = [];
+
+  function queuePaymentAlerts(txns){
+    if(!txns || txns.length === 0) return;
+    alertQueue.push(...txns);
+    // If nothing is currently showing, kick off the first one immediately.
+    if(!document.getElementById('alert-slot').innerHTML.trim()){
+      showNextQueuedAlert();
+    }
+  }
+
+  function showNextQueuedAlert(){
+    if(alertQueue.length === 0) return;
+    const next = alertQueue.shift();
+    showPaymentAlert(next);
+  }
+
   function showPaymentAlert(txn){
     const slot = document.getElementById('alert-slot');
     slot.innerHTML = `
@@ -1234,6 +1257,9 @@
         console.error('Failed to save tag to backend:', err);
       }
     }
+
+    // If more new transactions arrived in the same batch, show the next one.
+    showNextQueuedAlert();
   }
 
   function simulatePayment(){
@@ -1252,7 +1278,7 @@
       tag: null,
     };
     MOCK_TXNS.unshift(txn);
-    showPaymentAlert(txn);
+    queuePaymentAlerts([txn]);
   }
 
   function positionMiniToggleThumb(animate){
