@@ -702,26 +702,27 @@
   let MOCK_TXNS = [];
   let nextTxnId = 1000; // only used by the local "simulate payment" demo button
 
-  // ---- backend connection config, saved via window.storage ----
+  // ---- backend connection config, saved via localStorage ----
+  // (Bulga runs as an independently hosted page now, not a Claude artifact,
+  // so we use the browser's own localStorage rather than window.storage.)
   let API_BASE = null;   // e.g. "https://bulga-backend-production.up.railway.app"
   let API_KEY = null;
   let dataLoadError = null;
 
   async function loadApiConfig(){
     try{
-      const base = await window.storage.get('api_base', false);
-      const key = await window.storage.get('api_key', false);
-      API_BASE = base ? base.value : null;
-      API_KEY = key ? key.value : null;
+      API_BASE = localStorage.getItem('bulga_api_base');
+      API_KEY = localStorage.getItem('bulga_api_key');
     }catch(err){
       API_BASE = null; API_KEY = null;
     }
   }
 
   async function saveApiConfig(base, key){
-    await window.storage.set('api_base', base.replace(/\/$/, ''), false);
-    await window.storage.set('api_key', key, false);
-    API_BASE = base.replace(/\/$/, '');
+    const cleanBase = base.replace(/\/$/, '');
+    localStorage.setItem('bulga_api_base', cleanBase);
+    localStorage.setItem('bulga_api_key', key);
+    API_BASE = cleanBase;
     API_KEY = key;
   }
 
@@ -785,8 +786,7 @@
 
   async function loadBudget(){
     try{
-      const result = await window.storage.get('budget', false);
-      const val = result ? parseFloat(result.value) : NaN;
+      const val = parseFloat(localStorage.getItem('bulga_budget'));
       userBudget = isNaN(val) ? null : val;
     }catch(err){
       userBudget = null;
@@ -795,7 +795,7 @@
 
   async function saveBudget(val){
     try{
-      await window.storage.set('budget', String(val), false);
+      localStorage.setItem('bulga_budget', String(val));
       userBudget = val;
       return true;
     }catch(err){
