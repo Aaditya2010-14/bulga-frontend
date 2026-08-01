@@ -76,6 +76,25 @@
   }
   .fp-brand-name span{color:var(--blue);}
 
+  .fp-sync-dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:transparent;
+    transition:background 0.4s ease;
+    margin-left:2px;
+  }
+  .fp-sync-dot.syncing{
+    background:var(--blue-dim);
+    animation:fp-sync-pulse 1.1s ease-in-out infinite;
+  }
+  .fp-sync-dot.synced{
+    background:var(--credit);
+  }
+  @keyframes fp-sync-pulse{
+    0%,100%{ opacity:0.4; }
+    50%{ opacity:1; }
+  }
+
   .fp-nav{
     position:relative;
     display:flex;
@@ -676,6 +695,7 @@
     <div class="fp-brand">
       <div class="fp-brand-mark"></div>
       <div class="fp-brand-name">Bulga<span>.</span></div>
+      <div class="fp-sync-dot" id="sync-dot" title="Checking for new transactions"></div>
     </div>
     <div class="fp-nav">
       <div class="fp-nav-thumb" id="nav-thumb" data-pos="0"></div>
@@ -761,6 +781,66 @@
       return false;
     }
   }
+
+  // ---- background polling: quietly checks Gmail via the backend every so
+  // often while the tab is open, so new FamPay transactions show up without
+  // the user needing to reload the page. ----
+  const POLL_INTERVAL_MS = 45000; // 45 seconds
+  let pollTimer = null;
+
+  function setSyncDot(state){
+    const dot = document.getElementById('sync-dot');
+    if(!dot) return;
+    dot.classList.remove('syncing', 'synced');
+    if(state === 'syncing') dot.classList.add('syncing');
+    if(state === 'synced'){
+      dot.classList.add('synced');
+      setTimeout(() => dot.classList.remove('synced'), 1500);
+    }
+  }
+
+  async function pollForUpdates(){
+    if(!API_BASE || !API_KEY) return;
+    setSyncDot('syncing');
+    const previousCount = MOCK_TXNS.length;
+    const previousIds = new Set(MOCK_TXNS.map(t => t.id));
+
+    const ok = await refreshFromBackend();
+    if(!ok){
+      setSyncDot('idle');
+      return; // stay quiet on transient failures; next poll will retry
+    }
+
+    const hasNewTxn = MOCK_TXNS.some(t => !previousIds.has(t.id)) || MOCK_TXNS.length !== previousCount;
+
+    if(hasNewTxn){
+      // Re-render whatever the user is currently looking at, without
+      // yanking them to a different tab or replaying unrelated animations.
+      renderHome();
+      if(currentPage === 'expenses') renderExpenses();
+      if(currentPage === 'income') renderIncome();
+      setSyncDot('synced');
+    } else {
+      setSyncDot('idle');
+    }
+  }
+
+  function startPolling(){
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(pollForUpdates, POLL_INTERVAL_MS);
+  }
+
+  // Pause polling while the tab is hidden/backgrounded (saves your backend's
+  // Gmail-API quota), and do one immediate check when the tab becomes active
+  // again so switching back to Bulga feels current right away.
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){
+      if(pollTimer) clearInterval(pollTimer);
+    } else {
+      pollForUpdates();
+      startPolling();
+    }
+  });
 
   const TAG_LABELS = { essential: 'Essential', miscellaneous: 'Miscellaneous', food: 'Food' };
   let expensesSubPage = 'history'; // 'history' | 'piechart'
@@ -1299,7 +1379,10 @@
     thumb.style.width = targetWidth + 'px';
   }
 
+  let currentPage = 'home';
+
   function switchPage(page){
+    currentPage = page;
     document.getElementById('page-home').style.display = page==='home' ? 'block' : 'none';
     document.getElementById('page-expenses').style.display = page==='expenses' ? 'block' : 'none';
     document.getElementById('page-income').style.display = page==='income' ? 'block' : 'none';
@@ -1397,6 +1480,8 @@
       showBudgetModal(false); // first-time budget ask, only after data has loaded
     }
     renderExpenses(); // re-render now that the budget bar can show
+
+    startPolling();
   }
 
   async function init(){
