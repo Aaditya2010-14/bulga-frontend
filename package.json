@@ -1,0 +1,15 @@
+{
+  "name": "bulga-frontend",
+  "version": "1.0.0",
+  "description": "Static host for the Bulga app",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

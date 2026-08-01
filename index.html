@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --black-deep:#0E0D0C;
+    --black-card:#1A1815;
+    --black-card-raised:#211F1B;
+    --blue:#5B87C6;
+    --blue-bright:#9DC3EF;
+    --blue-dim:#3E5E85;
+    --bone:#F3EEE1;
+    --taupe:#8C8574;
+    --debit:#D98A6B;
+    --credit:#8FBF9F;
+    --food:#D4B57A;
+    --line:rgba(91,135,198,0.16);
+  }
+
+  *{box-sizing:border-box;}
+
+  html, body{
+    background:var(--black-deep);
+    margin:0;
+  }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track{ background:var(--black-deep); }
+  ::-webkit-scrollbar-thumb{ background:var(--black-card-raised); border-radius:8px; }
+  ::-webkit-scrollbar-thumb:hover{ background:var(--blue-dim); }
+  html{ scrollbar-color:var(--black-card-raised) var(--black-deep); }
+
+  .fp-app{
+    font-family:'Inter',sans-serif;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(91,135,198,0.07), transparent 60%),
+      var(--black-deep);
+    color:var(--bone);
+    min-height:100vh;
+    width:100%;
+    padding:0 0 40px 0;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  .fp-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 24px 18px 24px;
+  }
+
+  .fp-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .fp-brand-mark{
+    width:28px;height:28px;border-radius:8px;
+    background:linear-gradient(135deg, var(--blue-bright), var(--blue-dim));
+    box-shadow:0 2px 10px rgba(91,135,198,0.35);
+  }
+
+  .fp-brand-name{
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    letter-spacing:0.02em;
+    color:var(--bone);
+  }
+  .fp-brand-name span{color:var(--blue);}
+
+  .fp-nav{
+    position:relative;
+    display:flex;
+    gap:4px;
+    background:var(--black-card);
+    padding:4px;
+    border-radius:12px;
+    border:1px solid var(--line);
+  }
+
+  .fp-nav-thumb{
+    position:absolute;
+    top:4px; left:4px;
+    height:calc(100% - 8px);
+    border-radius:9px;
+    background:linear-gradient(135deg, var(--blue-bright), var(--blue));
+    transition:left 0.5s cubic-bezier(0.16,1,0.3,1), width 0.5s cubic-bezier(0.16,1,0.3,1);
+    z-index:0;
+  }
+
+  .fp-nav button{
+    position:relative;
+    z-index:1;
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    background:transparent;
+    border:none;
+    color:var(--taupe);
+    padding:8px 14px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:color 0.3s ease;
+  }
+  .fp-nav button.active{
+    color:var(--black-deep);
+  }
+  .fp-nav button:not(.active):hover{ color:var(--bone); }
+
+  /* ---------- HOME ---------- */
+  .fp-page{ padding:8px 24px 0 24px; }
+
+  .fp-hero{
+    background:linear-gradient(165deg, var(--black-card-raised), var(--black-card) 70%);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:26px 24px;
+    margin-bottom:18px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .fp-hero::after{
+    content:"";
+    position:absolute;
+    top:-60%; right:-20%;
+    width:260px;height:260px;
+    background:radial-gradient(circle, rgba(91,135,198,0.14), transparent 70%);
+  }
+
+  .fp-hero-label{
+    font-size:12px;
+    color:var(--taupe);
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+
+  .fp-hero-amount{
+    font-family:'Fraunces',serif;
+    font-size:42px;
+    font-weight:500;
+    color:var(--blue-bright);
+    line-height:1;
+    margin-bottom:14px;
+  }
+  .fp-hero-amount sup{ font-size:20px; color:var(--blue-dim); font-weight:400; }
+
+  .fp-hero-meta{
+    display:flex;
+    gap:20px;
+  }
+  .fp-hero-meta-item{ font-size:12.5px; color:var(--taupe); }
+  .fp-hero-meta-item b{ color:var(--bone); font-weight:600; display:block; font-size:14px; margin-top:2px; }
+
+  .fp-section-label{
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--blue-dim);
+    margin:22px 2px 12px 2px;
+    font-weight:600;
+  }
+
+  .fp-mini-list{ display:flex; flex-direction:column; gap:10px; }
+
+  .fp-mini-card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--black-card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 16px;
+  }
+
+  .fp-mini-left{ display:flex; align-items:center; gap:12px; }
+
+  .fp-glyph{
+    width:38px;height:38px;
+    border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+    background:var(--black-card-raised);
+    border:1px solid var(--line);
+  }
+
+  .fp-mini-name{ font-size:13.5px; font-weight:600; color:var(--bone); }
+  .fp-mini-sub{ font-size:11.5px; color:var(--taupe); margin-top:2px; }
+
+  .fp-amt{ font-family:'Fraunces',serif; font-size:15px; font-weight:500; }
+  .fp-amt.debit{ color:var(--debit); }
+  .fp-amt.credit{ color:var(--credit); }
+
+  .fp-see-all{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    font-size:12.5px;
+    color:var(--blue);
+    font-weight:600;
+    cursor:pointer;
+    padding:10px;
+  }
+
+  /* ---------- EXPENSES PAGE ---------- */
+  .fp-expenses-header{
+    padding:2px 2px 4px 2px;
+    margin-bottom:6px;
+  }
+  .fp-expenses-title{
+    font-family:'Fraunces',serif;
+    font-size:26px;
+    color:var(--bone);
+  }
+  .fp-expenses-sub{
+    font-size:12.5px;
+    color:var(--taupe);
+    margin-top:4px;
+  }
+
+  .fp-timeline{
+    position:relative;
+    margin-top:18px;
+    padding-left:22px;
+  }
+
+  .fp-thread{
+    position:absolute;
+    left:5px; top:6px; bottom:6px;
+    width:1.5px;
+    background:linear-gradient(180deg, var(--blue) 0%, var(--blue-dim) 40%, rgba(91,135,198,0.08) 100%);
+  }
+
+  .fp-day-group{ margin-bottom:22px; }
+
+  .fp-day-label{
+    font-size:11.5px;
+    color:var(--blue-dim);
+    font-weight:600;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    margin:0 0 10px -22px;
+    padding-left:22px;
+    position:relative;
+  }
+
+  .fp-card{
+    position:relative;
+    background:linear-gradient(160deg, var(--black-card-raised), var(--black-card));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:15px 16px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 14px 30px -18px rgba(0,0,0,0.7);
+    opacity:0;
+    transform:translateY(46px);
+    animation:fp-rise 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  .fp-card::before{
+    content:"";
+    position:absolute;
+    left:-22px; top:50%;
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--blue-bright);
+    box-shadow:0 0 0 3px var(--black-deep), 0 0 8px rgba(157,195,239,0.5);
+    transform:translateY(-50%);
+  }
+
+  @keyframes fp-rise{
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .fp-card-left{ display:flex; align-items:center; gap:12px; min-width:0; }
+
+  .fp-card-text{ min-width:0; }
+  .fp-card-name{
+    font-size:14px; font-weight:600; color:var(--bone);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .fp-card-cat{
+    font-size:11.5px; color:var(--taupe); margin-top:3px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .fp-dot{ width:3px;height:3px;border-radius:50%;background:var(--taupe); }
+
+  .fp-card-right{ text-align:right; flex-shrink:0; padding-left:10px; }
+  .fp-card-time{ font-size:10.5px; color:var(--taupe); margin-top:3px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .fp-card{ animation:none; opacity:1; transform:none; }
+  }
+
+  .fp-empty-note{
+    margin-top:18px;
+    padding:16px;
+    border:1px dashed var(--line);
+    border-radius:14px;
+    font-size:12px;
+    color:var(--taupe);
+    line-height:1.6;
+  }
+  .fp-empty-note b{ color:var(--blue); }
+
+  /* ---------- BUDGET BAR ---------- */
+  .fp-budget-bar{
+    background:linear-gradient(160deg, var(--black-card-raised), var(--black-card));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px 18px;
+    margin-bottom:18px;
+    box-shadow:0 14px 30px -20px rgba(0,0,0,0.7);
+  }
+  .fp-budget-top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .fp-budget-label{ font-size:11.5px; color:var(--taupe); text-transform:uppercase; letter-spacing:0.06em; }
+  .fp-budget-remaining{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-weight:500;
+    color:var(--blue-bright);
+  }
+  .fp-budget-remaining.over{ color:var(--debit); }
+  .fp-budget-sub{ font-size:11px; color:var(--taupe); margin-top:2px; }
+  .fp-budget-track{
+    width:100%;
+    height:8px;
+    border-radius:6px;
+    background:rgba(255,255,255,0.05);
+    overflow:hidden;
+    position:relative;
+  }
+  .fp-budget-fill{
+    height:100%;
+    border-radius:6px;
+    background:linear-gradient(90deg, var(--blue-dim), var(--blue-bright));
+    transition:width 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .fp-budget-fill.warn{ background:linear-gradient(90deg, var(--blue-dim), var(--debit)); }
+  .fp-budget-edit{
+    font-size:11px;
+    color:var(--blue);
+    cursor:pointer;
+    margin-top:10px;
+    display:inline-block;
+    font-weight:600;
+  }
+
+  /* ---------- BUDGET MODAL ---------- */
+  .fp-modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(4,4,3,0.72);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:24px;
+  }
+  .fp-modal{
+    width:100%;
+    max-width:340px;
+    background:linear-gradient(165deg, var(--black-card-raised), var(--black-card) 75%);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:26px 24px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.8);
+  }
+  .fp-modal-title{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    color:var(--bone);
+    margin-bottom:6px;
+  }
+  .fp-modal-sub{
+    font-size:12.5px;
+    color:var(--taupe);
+    line-height:1.5;
+    margin-bottom:18px;
+  }
+  .fp-modal-input-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--black-deep);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:16px;
+  }
+  .fp-modal-input-wrap span{ color:var(--blue); font-family:'Fraunces',serif; font-size:16px; }
+  .fp-modal-input-wrap input{
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--bone);
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    width:100%;
+  }
+  .fp-modal-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg, var(--blue-bright), var(--blue));
+    color:var(--black-deep);
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .fp-modal-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  /* ---------- TAG PILLS ---------- */
+  .fp-tag-pill{
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:20px;
+    display:inline-block;
+    margin-top:5px;
+  }
+  .fp-tag-pill.essential{ background:rgba(143,191,159,0.14); color:var(--credit); }
+  .fp-tag-pill.miscellaneous{ background:rgba(217,138,107,0.14); color:var(--debit); }
+  .fp-tag-pill.food{ background:rgba(212,181,122,0.14); color:var(--food); }
+  .fp-tag-pill.untagged{ background:rgba(255,255,255,0.06); color:var(--taupe); cursor:pointer; }
+
+  /* ---------- MINI TOGGLE (History / Pie Chart) ---------- */
+  .fp-mini-toggle{
+    position:relative;
+    display:inline-flex;
+    width:fit-content;
+    background:var(--black-card);
+    border-radius:12px;
+    padding:2px;
+    margin:0;
+    animation:fp-toggle-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .fp-mini-toggle-row{
+    display:flex;
+    justify-content:center;
+    margin:2px 0 16px 0;
+  }
+  @keyframes fp-toggle-pop{
+    from{ opacity:0; transform:scale(0.9) translateY(-6px); }
+    to{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  .fp-mini-toggle-thumb{
+    position:absolute;
+    top:2px; left:2px;
+    height:calc(100% - 4px);
+    border-radius:9px;
+    background:linear-gradient(135deg, var(--blue-bright), var(--blue));
+    transition:left 0.4s cubic-bezier(0.16,1,0.3,1), width 0.4s cubic-bezier(0.16,1,0.3,1);
+    z-index:0;
+  }
+  .fp-mini-toggle-btn{
+    position:relative;
+    z-index:1;
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    padding:6px 24px;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    line-height:1;
+    white-space:nowrap;
+    color:var(--taupe);
+    cursor:pointer;
+    transition:color 0.3s ease;
+  }
+  .fp-mini-toggle-btn.active{ color:var(--black-deep); }
+  .fp-mini-toggle-label{ display:inline-block; white-space:nowrap; flex-shrink:0; }
+
+  /* ---------- SUBPAGES (swipeable) ---------- */
+  .fp-subpage-wrap{ position:relative; touch-action:pan-y; }
+  .fp-subpage{ width:100%; }
+
+  /* ---------- PIE CHART ---------- */
+  .fp-piechart-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:14px 0 6px 0;
+  }
+  .fp-piechart-svg{ width:210px; height:210px; }
+  .fp-pie-ring-bg{ fill:none; stroke:rgba(255,255,255,0.05); stroke-width:22; }
+  .fp-pie-ring-seg{
+    fill:none;
+    stroke-width:22;
+    stroke-linecap:round;
+    transform-origin:center;
+    transform:rotate(-90deg);
+  }
+  .fp-pie-center-label{ font-family:'Fraunces',serif; font-size:22px; fill:var(--bone); }
+  .fp-pie-center-sub{ font-family:'Inter',sans-serif; font-size:10px; fill:var(--taupe); }
+
+  .fp-pie-legend{ display:flex; gap:22px; margin-top:16px; }
+  .fp-pie-legend-item{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--bone); }
+  .fp-pie-legend-dot{ width:9px; height:9px; border-radius:50%; }
+
+  .fp-pie-empty{
+    margin:20px 0;
+    padding:20px;
+    text-align:center;
+    border:1px dashed var(--line);
+    border-radius:16px;
+    font-size:12px;
+    color:var(--taupe);
+    line-height:1.6;
+  }
+
+  .fp-mood-card{
+    margin:22px 2px 4px 2px;
+    padding:16px 17px;
+    border-radius:16px;
+    font-size:13px;
+    line-height:1.55;
+    font-weight:500;
+    opacity:0;
+    transform:translateY(16px);
+    animation:fp-rise 0.55s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .fp-mood-card.tone-warn{
+    background:rgba(217,138,107,0.10);
+    border:1px solid rgba(217,138,107,0.28);
+    color:var(--debit);
+  }
+  .fp-mood-card.tone-neutral{
+    background:rgba(91,135,198,0.10);
+    border:1px solid rgba(91,135,198,0.28);
+    color:var(--blue-bright);
+  }
+  .fp-mood-card.tone-positive{
+    background:rgba(143,191,159,0.10);
+    border:1px solid rgba(143,191,159,0.28);
+    color:var(--credit);
+  }
+  .fp-mood-emoji{ margin-right:6px; }
+
+  .fp-biggest-label{
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--blue-dim);
+    margin:24px 2px 12px 2px;
+    font-weight:600;
+  }
+
+  .fp-rank-card{
+    position:relative;
+    background:linear-gradient(160deg, var(--black-card-raised), var(--black-card));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:13px 15px;
+    margin-bottom:9px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 14px 28px -18px rgba(0,0,0,0.7);
+    opacity:0;
+    transform:translateY(40px);
+    animation:fp-rise 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .fp-rank-num{
+    font-family:'Fraunces',serif;
+    font-size:14px;
+    color:var(--blue-dim);
+    width:18px;
+    flex-shrink:0;
+  }
+  .fp-rank-text{ flex:1; min-width:0; }
+  .fp-rank-name{ font-size:13.5px; font-weight:600; color:var(--bone); }
+  .fp-rank-cat{ font-size:11px; color:var(--taupe); margin-top:2px; }
+  .fp-rank-amt{ font-family:'Fraunces',serif; font-size:14.5px; color:var(--debit); flex-shrink:0; }
+
+  /* ---------- FAB (simulate payment) ---------- */
+  .fp-fab{
+    position:fixed;
+    right:22px;
+    bottom:26px;
+    background:linear-gradient(135deg, var(--blue-bright), var(--blue));
+    color:var(--black-deep);
+    border:none;
+    border-radius:16px;
+    padding:13px 18px;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    box-shadow:0 14px 30px -10px rgba(0,0,0,0.6);
+    z-index:20;
+  }
+  .fp-fab:active{ transform:scale(0.97); }
+
+  /* ---------- PAYMENT ALERT (in-app notification) ---------- */
+  .fp-alert-slot{
+    position:fixed;
+    top:0; left:0; right:0;
+    display:flex;
+    justify-content:center;
+    z-index:60;
+    padding:14px;
+    pointer-events:none;
+  }
+  .fp-alert-card{
+    pointer-events:auto;
+    width:100%;
+    max-width:380px;
+    background:linear-gradient(160deg, var(--black-card-raised), var(--black-card));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px 16px 14px 16px;
+    box-shadow:0 20px 45px -15px rgba(0,0,0,0.75);
+    animation:fp-alert-drop 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  @keyframes fp-alert-drop{
+    from{ opacity:0; transform:translateY(-40px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .fp-alert-top{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .fp-alert-title{ font-size:12px; color:var(--blue); font-weight:700; letter-spacing:0.03em; text-transform:uppercase; }
+  .fp-alert-desc{ font-size:14px; color:var(--bone); font-weight:600; margin-top:2px; }
+  .fp-alert-amt{ font-family:'Fraunces',serif; font-size:15px; color:var(--debit); margin-left:auto; }
+  .fp-alert-question{ font-size:11.5px; color:var(--taupe); margin-bottom:10px; }
+  .fp-alert-actions{ display:flex; gap:8px; }
+  .fp-alert-btn{
+    flex:1;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--black-deep);
+    color:var(--bone);
+    font-weight:700;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .fp-alert-btn.essential:hover{ border-color:var(--credit); color:var(--credit); }
+  .fp-alert-btn.miscellaneous:hover{ border-color:var(--debit); color:var(--debit); }
+  .fp-alert-btn.food:hover{ border-color:var(--food); color:var(--food); }
+</style>
+</head>
+<body>
+
+<div class="fp-app" id="fp-app">
+  <div class="fp-topbar">
+    <div class="fp-brand">
+      <div class="fp-brand-mark"></div>
+      <div class="fp-brand-name">Bulga<span>.</span></div>
+    </div>
+    <div class="fp-nav">
+      <div class="fp-nav-thumb" id="nav-thumb" data-pos="0"></div>
+      <button id="nav-home" class="active">Home</button>
+      <button id="nav-expenses">Expenses</button>
+      <button id="nav-income">Income</button>
+    </div>
+  </div>
+
+  <div id="page-home" class="fp-page"></div>
+  <div id="page-expenses" class="fp-page" style="display:none;"></div>
+  <div id="page-income" class="fp-page" style="display:none;"></div>
+</div>
+
+<div id="budget-modal-slot"></div>
+<div id="alert-slot" class="fp-alert-slot"></div>
+<button class="fp-fab" id="simulate-payment-btn">+ Simulate payment</button>
+
+<script>
+(function(){
+
+  // ---- live FamPay transactions, fetched from your Bulga backend ----
+  // (server.js / gmail.js / db.js — the Node service that reads Gmail for you)
+  let MOCK_TXNS = [];
+  let nextTxnId = 1000; // only used by the local "simulate payment" demo button
+
+  // ---- backend connection config, saved via window.storage ----
+  let API_BASE = null;   // e.g. "https://bulga-backend-production.up.railway.app"
+  let API_KEY = null;
+  let dataLoadError = null;
+
+  async function loadApiConfig(){
+    try{
+      const base = await window.storage.get('api_base', false);
+      const key = await window.storage.get('api_key', false);
+      API_BASE = base ? base.value : null;
+      API_KEY = key ? key.value : null;
+    }catch(err){
+      API_BASE = null; API_KEY = null;
+    }
+  }
+
+  async function saveApiConfig(base, key){
+    await window.storage.set('api_base', base.replace(/\/$/, ''), false);
+    await window.storage.set('api_key', key, false);
+    API_BASE = base.replace(/\/$/, '');
+    API_KEY = key;
+  }
+
+  async function apiFetch(path, options = {}){
+    const res = await fetch(API_BASE + path, {
+      ...options,
+      headers: {
+        'X-Bulga-Key': API_KEY,
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+    });
+    if(!res.ok){
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Request failed (${res.status})`);
+    }
+    return res.json();
+  }
+
+  // Refreshes from Gmail (via the backend) and loads the latest transactions.
+  // Called once on every app load.
+  async function refreshFromBackend(){
+    if(!API_BASE || !API_KEY){
+      dataLoadError = 'not_configured';
+      return false;
+    }
+    try{
+      await apiFetch('/refresh', { method: 'POST' });
+      const data = await apiFetch('/transactions');
+      MOCK_TXNS = data.transactions || [];
+      dataLoadError = null;
+      return true;
+    }catch(err){
+      console.error('Failed to refresh from backend:', err);
+      dataLoadError = err.message;
+      return false;
+    }
+  }
+
+  const TAG_LABELS = { essential: 'Essential', miscellaneous: 'Miscellaneous', food: 'Food' };
+  let expensesSubPage = 'history'; // 'history' | 'piechart'
+  let miniTogglePrevRect = null; // { left, width } from the last render, for animating the thumb
+
+  // Merchant pool used only for the "simulate incoming payment" demo button
+  const DEMO_MERCHANTS = [
+    { name:"Domino's", category:"Food", glyph:"🍕" },
+    { name:"Uber", category:"Transport", glyph:"🚗" },
+    { name:"Myntra", category:"Shopping", glyph:"👕" },
+    { name:"Netflix", category:"Subscription", glyph:"📺" },
+    { name:"PVR Cinemas", category:"Entertainment", glyph:"🎬" },
+  ];
+
+  // ---- budget state ----
+  let userBudget = null; // null until loaded/set
+
+  // "Today" for cycle/budget calculations. With live data, this is simply
+  // the real current date — no more deriving it from mock data.
+  let REF_TODAY = new Date();
+
+  function fmt(n){ return "₹" + n.toLocaleString("en-IN"); }
+
+  async function loadBudget(){
+    try{
+      const result = await window.storage.get('budget', false);
+      const val = result ? parseFloat(result.value) : NaN;
+      userBudget = isNaN(val) ? null : val;
+    }catch(err){
+      userBudget = null;
+    }
+  }
+
+  async function saveBudget(val){
+    try{
+      await window.storage.set('budget', String(val), false);
+      userBudget = val;
+      return true;
+    }catch(err){
+      console.error('Could not save budget', err);
+      return false;
+    }
+  }
+
+  function monthSpend(){
+    return MOCK_TXNS
+      .filter(t => t.type === 'debit')
+      .filter(t => {
+        const d = new Date(t.date);
+        return d.getMonth() === REF_TODAY.getMonth() && d.getFullYear() === REF_TODAY.getFullYear();
+      })
+      .reduce((s,t)=> s + t.amount, 0);
+  }
+
+  function renderBudgetBar(){
+    if(userBudget === null) return '';
+    const spent = monthSpend();
+    const remaining = userBudget - spent;
+    const pct = Math.min(100, Math.max(0, (spent / userBudget) * 100));
+    const isOver = remaining < 0;
+    const isWarn = !isOver && pct >= 80;
+    const monthName = REF_TODAY.toLocaleDateString('en-IN', { month:'long' });
+
+    return `
+      <div class="fp-budget-bar">
+        <div class="fp-budget-top">
+          <div>
+            <div class="fp-budget-label">${monthName} budget</div>
+            <div class="fp-budget-remaining ${isOver ? 'over' : ''}">${isOver ? '−' : ''}${fmt(Math.abs(remaining))} ${isOver ? 'over' : 'left'}</div>
+            <div class="fp-budget-sub">${fmt(spent)} spent of ${fmt(userBudget)}</div>
+          </div>
+        </div>
+        <div class="fp-budget-track">
+          <div class="fp-budget-fill ${isWarn || isOver ? 'warn' : ''}" style="width:${pct}%"></div>
+        </div>
+        <div class="fp-budget-edit" id="edit-budget-link">Edit budget</div>
+      </div>
+    `;
+  }
+
+  function showBudgetModal(isEdit){
+    const slot = document.getElementById('budget-modal-slot');
+    slot.innerHTML = `
+      <div class="fp-modal-overlay">
+        <div class="fp-modal">
+          <div class="fp-modal-title">${isEdit ? 'Update your budget' : "What's your monthly budget?"}</div>
+          <div class="fp-modal-sub">${isEdit ? "We'll recalculate what you have left based on this." : "We'll track your FamPay expenses against this and show what you have left each month."}</div>
+          <div class="fp-modal-input-wrap">
+            <span>₹</span>
+            <input type="number" id="budget-input" placeholder="e.g. 5000" min="0" value="${isEdit && userBudget ? userBudget : ''}" />
+          </div>
+          <button class="fp-modal-btn" id="budget-submit">${isEdit ? 'Save' : "Let's go"}</button>
+        </div>
+      </div>
+    `;
+    const input = document.getElementById('budget-input');
+    const btn = document.getElementById('budget-submit');
+    input.focus();
+    btn.onclick = async () => {
+      const val = parseFloat(input.value);
+      if(!val || val <= 0) return;
+      btn.disabled = true;
+      await saveBudget(val);
+      slot.innerHTML = '';
+      renderExpenses();
+    };
+  }
+
+  function dayLabel(dateStr){
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-IN", { weekday:'short', day:'numeric', month:'short' });
+  }
+
+  function groupByDay(txns){
+    const groups = {};
+    txns.forEach(t=>{
+      if(!groups[t.date]) groups[t.date] = [];
+      groups[t.date].push(t);
+    });
+    return Object.keys(groups).sort((a,b)=> new Date(b) - new Date(a)).map(date=>({date, items:groups[date]}));
+  }
+
+  function renderHome(){
+    const sorted = [...MOCK_TXNS].sort((a,b)=> new Date(b.date+' '+b.time) - new Date(a.date+' '+a.time));
+    const cycleDebits = MOCK_TXNS.filter(t => t.type==='debit' && sameMonth(t.date, REF_TODAY));
+    const totalSpent = cycleDebits.reduce((s,t)=>s+t.amount,0);
+    const catCount = {};
+    cycleDebits.forEach(t=> catCount[t.category] = (catCount[t.category]||0) + t.amount);
+    const topCat = Object.keys(catCount).sort((a,b)=>catCount[b]-catCount[a])[0] || '—';
+
+    const recent = sorted.slice(0,4);
+    const isConnected = !!(API_BASE && API_KEY);
+
+    const html = `
+      <div class="fp-hero">
+        <div class="fp-hero-label">Spent this cycle</div>
+        <div class="fp-hero-amount">${fmt(totalSpent)}<sup>.00</sup></div>
+        <div class="fp-hero-meta">
+          <div class="fp-hero-meta-item">Top category<b>${topCat}</b></div>
+          <div class="fp-hero-meta-item">Transactions<b>${MOCK_TXNS.length}</b></div>
+        </div>
+      </div>
+
+      <div class="fp-section-label">Recent activity</div>
+      <div class="fp-mini-list">
+        ${recent.map(t=>`
+          <div class="fp-mini-card">
+            <div class="fp-mini-left">
+              <div class="fp-glyph">${t.glyph}</div>
+              <div>
+                <div class="fp-mini-name">${t.name}</div>
+                <div class="fp-mini-sub">${dayLabel(t.date)} · ${t.time}</div>
+              </div>
+            </div>
+            <div class="fp-amt ${t.type}">${t.type==='credit'?'+':'−'}${fmt(t.amount)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="fp-see-all" id="see-all-link">View full expenses →</div>
+
+      ${isConnected ? `
+        <div class="fp-empty-note">
+          Live data from your FamPay Gmail, refreshed automatically each time you open Bulga.
+        </div>
+      ` : `
+        <div class="fp-empty-note">
+          Not connected to your Bulga backend yet — set up the connection to see your real transactions.
+        </div>
+      `}
+    `;
+    document.getElementById('page-home').innerHTML = html;
+    document.getElementById('see-all-link').onclick = () => switchPage('expenses');
+  }
+
+  function buildTimelineBlock(txns, noun){
+    const sorted = [...txns].sort((a,b)=> new Date(b.date+' '+b.time) - new Date(a.date+' '+a.time));
+    const groups = groupByDay(sorted);
+
+    let cardIndex = 0;
+    const groupsHtml = groups.map(g => {
+      const itemsHtml = g.items.map(t => {
+        const delay = (cardIndex * 0.07).toFixed(2);
+        cardIndex++;
+        return `
+          <div class="fp-card" style="animation-delay:${delay}s">
+            <div class="fp-card-left">
+              <div class="fp-glyph">${t.glyph}</div>
+              <div class="fp-card-text">
+                <div class="fp-card-name">${t.name}</div>
+                <div class="fp-card-cat">${t.category}<span class="fp-dot"></span>FamPay</div>
+                ${t.type === 'debit' ? `<div class="fp-tag-pill ${t.tag || 'untagged'}" data-txn-id="${t.id}">${t.tag ? TAG_LABELS[t.tag] : 'tag it'}</div>` : ''}
+              </div>
+            </div>
+            <div class="fp-card-right">
+              <div class="fp-amt ${t.type}">${t.type==='credit'?'+':'−'}${fmt(t.amount)}</div>
+              <div class="fp-card-time">${t.time}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      return `<div class="fp-day-group"><div class="fp-day-label">${dayLabel(g.date)}</div>${itemsHtml}</div>`;
+    }).join('');
+
+    return {
+      html: `<div class="fp-timeline"><div class="fp-thread"></div>${groupsHtml || `<div class="fp-empty-note">No ${noun} yet.</div>`}</div>`,
+      count: sorted.length
+    };
+  }
+
+  function sameMonth(dateStr, ref){
+    const d = new Date(dateStr);
+    return d.getMonth() === ref.getMonth() && d.getFullYear() === ref.getFullYear();
+  }
+
+  function buildBiggestMiscHtml(monthDebits){
+    const misc = monthDebits.filter(t => t.tag === 'miscellaneous').sort((a,b)=> b.amount - a.amount).slice(0,3);
+    if(misc.length === 0) return '';
+    const cardsHtml = misc.map((t,i) => `
+      <div class="fp-rank-card" style="animation-delay:${(i*0.09).toFixed(2)}s">
+        <div class="fp-rank-num">#${i+1}</div>
+        <div class="fp-rank-text">
+          <div class="fp-rank-name">${t.name}</div>
+          <div class="fp-rank-cat">${t.category} · ${dayLabel(t.date)}</div>
+        </div>
+        <div class="fp-rank-amt">${fmt(t.amount)}</div>
+      </div>
+    `).join('');
+    return `<div class="fp-biggest-label">Biggest miscellaneous spends</div>${cardsHtml}`;
+  }
+
+  function buildMoodMessage(monthDebits){
+    const essentialTotal = monthDebits.filter(t=>t.tag==='essential').reduce((s,t)=>s+t.amount,0);
+    const miscTotal = monthDebits.filter(t=>t.tag==='miscellaneous').reduce((s,t)=>s+t.amount,0);
+    const foodTotal = monthDebits.filter(t=>t.tag==='food').reduce((s,t)=>s+t.amount,0);
+    const totalSpent = monthDebits.reduce((s,t)=>s+t.amount,0);
+
+    const miscBase = essentialTotal + foodTotal;
+    // ratio 1: miscellaneous spend relative to essential+food spend
+    const miscRatio = miscBase > 0 ? (miscTotal / miscBase) : (miscTotal > 0 ? Infinity : 0);
+    const miscHigh = miscRatio > 0.45;
+
+    // ratio 2: total spend relative to monthly budget (skip if no budget set)
+    const budgetRatio = userBudget ? (totalSpent / userBudget) : null;
+    const budgetHigh = budgetRatio !== null && budgetRatio > 0.7;
+
+    let tone, emoji, text;
+
+    if(miscHigh && budgetHigh){
+      tone = 'warn'; emoji = '🚨';
+      text = `Miscellaneous spending is running high and you've already used a big chunk of this month's budget. Might be worth pumping the brakes for a bit.`;
+    } else if(miscHigh && !budgetHigh){
+      tone = 'warn'; emoji = '👀';
+      text = `Miscellaneous spend is outpacing your essentials and food this month — budget's still in decent shape, but keep an eye on where the extra is going.`;
+    } else if(!miscHigh && budgetHigh){
+      tone = 'neutral'; emoji = '🧾';
+      text = `Your spending mostly looks essential, but you're closing in on your monthly budget. Nothing alarming, just worth watching the next few days.`;
+    } else {
+      tone = 'positive'; emoji = '✨';
+      text = `Nice balance this month — miscellaneous spend is in check and you've got room left in your budget. Keep this up.`;
+    }
+
+    return `
+      <div class="fp-mood-card tone-${tone}">
+        <span class="fp-mood-emoji">${emoji}</span>${text}
+      </div>
+    `;
+  }
+
+  function buildPieChartPanel(monthDebits){
+    const essentialTotal = monthDebits.filter(t=>t.tag==='essential').reduce((s,t)=>s+t.amount,0);
+    const miscTotal = monthDebits.filter(t=>t.tag==='miscellaneous').reduce((s,t)=>s+t.amount,0);
+    const total = essentialTotal + miscTotal;
+
+    if(total === 0){
+      return `<div class="fp-pie-empty">Tag a few payments as <b style="color:var(--credit)">Essential</b> or <b style="color:var(--debit)">Miscellaneous</b> to see your split here. (Food-tagged spends sit outside this chart.)</div>` + buildMoodMessage(monthDebits);
+    }
+
+    const r = 85, cx = 105, cy = 105;
+    const circumference = 2 * Math.PI * r;
+    const Le = (essentialTotal/total) * circumference;
+    const Lm = (miscTotal/total) * circumference;
+    const essentialFinal = 0;
+    const miscFinal = -Le;
+
+    return `
+      <div class="fp-piechart-wrap">
+        <svg class="fp-piechart-svg" viewBox="0 0 210 210">
+          <circle class="fp-pie-ring-bg" cx="${cx}" cy="${cy}" r="${r}"></circle>
+          <g>
+            <circle id="pie-seg-essential" class="fp-pie-ring-seg" cx="${cx}" cy="${cy}" r="${r}"
+              style="stroke:var(--credit)"
+              stroke-dasharray="${Le.toFixed(2)} ${(circumference-Le).toFixed(2)}"
+              stroke-dashoffset="${(essentialFinal + Le).toFixed(2)}"
+              data-final-offset="${essentialFinal.toFixed(2)}"
+            ></circle>
+            <circle id="pie-seg-misc" class="fp-pie-ring-seg" cx="${cx}" cy="${cy}" r="${r}"
+              style="stroke:var(--debit)"
+              stroke-dasharray="${Lm.toFixed(2)} ${(circumference-Lm).toFixed(2)}"
+              stroke-dashoffset="${(miscFinal + Lm).toFixed(2)}"
+              data-final-offset="${miscFinal.toFixed(2)}"
+            ></circle>
+          </g>
+          <text x="105" y="100" text-anchor="middle" class="fp-pie-center-label">${Math.round((essentialTotal/total)*100)}%</text>
+          <text x="105" y="118" text-anchor="middle" class="fp-pie-center-sub">Essential</text>
+        </svg>
+        <div class="fp-pie-legend">
+          <div class="fp-pie-legend-item"><div class="fp-pie-legend-dot" style="background:var(--credit)"></div>Essential · ${fmt(essentialTotal)}</div>
+          <div class="fp-pie-legend-item"><div class="fp-pie-legend-dot" style="background:var(--debit)"></div>Miscellaneous · ${fmt(miscTotal)}</div>
+        </div>
+      </div>
+      ${buildBiggestMiscHtml(monthDebits)}
+      ${buildMoodMessage(monthDebits)}
+    `;
+  }
+
+  function triggerPieAnimation(){
+    const e = document.getElementById('pie-seg-essential');
+    const m = document.getElementById('pie-seg-misc');
+    if(!e || !m) return;
+    requestAnimationFrame(() => {
+      e.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.65,0,0.35,1)';
+      m.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.65,0,0.35,1) 0.15s';
+      e.style.strokeDashoffset = e.dataset.finalOffset;
+      m.style.strokeDashoffset = m.dataset.finalOffset;
+    });
+  }
+
+  function attachSwipeHandlers(el){
+    if(!el) return;
+    let startX = null;
+    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive:true });
+    el.addEventListener('touchend', e => {
+      if(startX === null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if(dx > 50 && expensesSubPage === 'history'){ expensesSubPage = 'piechart'; renderExpenses(); }
+      else if(dx < -50 && expensesSubPage === 'piechart'){ expensesSubPage = 'history'; renderExpenses(); }
+      startX = null;
+    });
+  }
+
+  function showPaymentAlert(txn){
+    const slot = document.getElementById('alert-slot');
+    slot.innerHTML = `
+      <div class="fp-alert-card">
+        <div class="fp-alert-top">
+          <div class="fp-glyph">${txn.glyph}</div>
+          <div>
+            <div class="fp-alert-title">New payment · Bulga</div>
+            <div class="fp-alert-desc">${txn.name}</div>
+          </div>
+          <div class="fp-alert-amt">−${fmt(txn.amount)}</div>
+        </div>
+        <div class="fp-alert-question">How would you tag this?</div>
+        <div class="fp-alert-actions">
+          <button class="fp-alert-btn essential" id="alert-essential">Essential</button>
+          <button class="fp-alert-btn miscellaneous" id="alert-miscellaneous">Miscellaneous</button>
+          <button class="fp-alert-btn food" id="alert-food">Food</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('alert-essential').onclick = () => resolveAlert(txn, 'essential');
+    document.getElementById('alert-miscellaneous').onclick = () => resolveAlert(txn, 'miscellaneous');
+    document.getElementById('alert-food').onclick = () => resolveAlert(txn, 'food');
+
+    // best-effort real OS notification alongside the in-app one
+    try{
+      if('Notification' in window){
+        if(Notification.permission === 'granted'){
+          new Notification('Bulga', { body: `${txn.name} · ${fmt(txn.amount)} — tag it in the app` });
+        } else if(Notification.permission !== 'denied'){
+          Notification.requestPermission().catch(()=>{});
+        }
+      }
+    }catch(err){ /* sandboxed environments may block this entirely — the in-app banner above still works */ }
+  }
+
+  async function resolveAlert(txn, tag){
+    txn.tag = tag;
+    document.getElementById('alert-slot').innerHTML = '';
+    renderHome();
+    renderExpenses();
+
+    // Only persist to the backend for real (Gmail-sourced) transactions —
+    // locally simulated demo payments (id starts with "t") aren't stored there.
+    if(API_BASE && API_KEY && txn.id && txn.id.startsWith('fp-')){
+      try{
+        await apiFetch(`/transactions/${encodeURIComponent(txn.id)}/tag`, {
+          method: 'POST',
+          body: JSON.stringify({ tag }),
+        });
+      }catch(err){
+        console.error('Failed to save tag to backend:', err);
+      }
+    }
+  }
+
+  function simulatePayment(){
+    const m = DEMO_MERCHANTS[Math.floor(Math.random() * DEMO_MERCHANTS.length)];
+    const amount = Math.floor(100 + Math.random() * 700);
+    const now = new Date();
+    const txn = {
+      id: 't' + (nextTxnId++),
+      name: m.name,
+      category: m.category,
+      amount,
+      type: 'debit',
+      date: now.toISOString().slice(0,10),
+      time: now.toLocaleTimeString('en-IN', { hour:'numeric', minute:'2-digit' }),
+      glyph: m.glyph,
+      tag: null,
+    };
+    MOCK_TXNS.unshift(txn);
+    showPaymentAlert(txn);
+  }
+
+  function positionMiniToggleThumb(animate){
+    const thumb = document.getElementById('mini-toggle-thumb');
+    const activeBtn = document.querySelector(`.fp-mini-toggle-btn[data-sub="${expensesSubPage}"]`);
+    if(!thumb || !activeBtn) return;
+    const toggle = activeBtn.parentElement;
+    const toggleRect = toggle.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+
+    // Pill exactly fills the active button's own box (inset to match the
+    // 2px container padding), guaranteeing it's centered under that button's
+    // label regardless of the other label's width.
+    const targetLeft = btnRect.left - toggleRect.left + toggle.scrollLeft;
+    const pillWidth = btnRect.width;
+
+    // The thumb element is a fresh DOM node every render (innerHTML rebuild),
+    // so to animate a slide we place it at the last known position first
+    // (no transition), then transition it over to the new position.
+    if(animate && miniTogglePrevRect){
+      thumb.style.transition = 'none';
+      thumb.style.left = miniTogglePrevRect.left + 'px';
+      thumb.style.width = miniTogglePrevRect.width + 'px';
+      void thumb.offsetWidth; // force reflow
+      thumb.style.transition = 'left 0.4s cubic-bezier(0.16,1,0.3,1), width 0.4s cubic-bezier(0.16,1,0.3,1)';
+      thumb.style.left = targetLeft + 'px';
+      thumb.style.width = pillWidth + 'px';
+    } else {
+      thumb.style.transition = 'none';
+      thumb.style.left = targetLeft + 'px';
+      thumb.style.width = pillWidth + 'px';
+      void thumb.offsetWidth;
+      thumb.style.transition = '';
+    }
+
+    miniTogglePrevRect = { left: targetLeft, width: pillWidth };
+  }
+
+  function renderExpenses(){
+    const debitTxns = MOCK_TXNS.filter(t => t.type === 'debit');
+    const timeline = buildTimelineBlock(debitTxns, 'transactions');
+    const monthDebits = debitTxns.filter(t => sameMonth(t.date, REF_TODAY));
+    const pieHtml = buildPieChartPanel(monthDebits);
+
+    const historyHtml = `
+      <div class="fp-expenses-header">
+        <div class="fp-expenses-title">Expenses</div>
+        <div class="fp-expenses-sub">Newest to oldest · ${timeline.count} transactions</div>
+      </div>
+      ${timeline.html}
+    `;
+
+    const html = `
+      ${renderBudgetBar()}
+      <div class="fp-mini-toggle-row">
+        <div class="fp-mini-toggle" id="mini-toggle">
+          <div class="fp-mini-toggle-thumb" id="mini-toggle-thumb"></div>
+          <button class="fp-mini-toggle-btn ${expensesSubPage==='history' ? 'active' : ''}" data-sub="history"><span class="fp-mini-toggle-label">History</span></button>
+          <button class="fp-mini-toggle-btn ${expensesSubPage==='piechart' ? 'active' : ''}" data-sub="piechart"><span class="fp-mini-toggle-label">Chart</span></button>
+        </div>
+      </div>
+      <div class="fp-subpage-wrap" id="subpage-wrap">
+        <div class="fp-subpage" id="subpage-history" style="display:${expensesSubPage==='history' ? 'block' : 'none'}">${historyHtml}</div>
+        <div class="fp-subpage" id="subpage-piechart" style="display:${expensesSubPage==='piechart' ? 'block' : 'none'}">${pieHtml}</div>
+      </div>
+    `;
+    document.getElementById('page-expenses').innerHTML = html;
+
+    const editLink = document.getElementById('edit-budget-link');
+    if(editLink) editLink.onclick = () => showBudgetModal(true);
+
+    document.querySelectorAll('#page-expenses .fp-tag-pill').forEach(pill => {
+      pill.onclick = () => {
+        const txn = MOCK_TXNS.find(t => t.id === pill.dataset.txnId);
+        if(txn) showPaymentAlert(txn);
+      };
+    });
+
+    document.querySelectorAll('.fp-mini-toggle-btn').forEach(btn => {
+      btn.onclick = () => { expensesSubPage = btn.dataset.sub; renderExpenses(); };
+    });
+
+    attachSwipeHandlers(document.getElementById('subpage-wrap'));
+    requestAnimationFrame(() => positionMiniToggleThumb(true));
+
+    if(expensesSubPage === 'piechart'){
+      setTimeout(triggerPieAnimation, 30);
+    }
+  }
+
+  function renderIncome(){
+    const creditTxns = MOCK_TXNS.filter(t => t.type === 'credit');
+    const timeline = buildTimelineBlock(creditTxns, 'transactions');
+    const html = `
+      <div class="fp-expenses-header">
+        <div class="fp-expenses-title">Income</div>
+        <div class="fp-expenses-sub">Newest to oldest · ${timeline.count} transactions</div>
+      </div>
+      ${timeline.html}
+    `;
+    document.getElementById('page-income').innerHTML = html;
+  }
+
+  function positionNavThumb(activeBtn, animate){
+    const thumb = document.getElementById('nav-thumb');
+    const nav = activeBtn.parentElement;
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    const targetLeft = btnRect.left - navRect.left + nav.scrollLeft;
+    const targetWidth = btnRect.width;
+
+    if(!animate){
+      thumb.style.transition = 'none';
+      thumb.style.left = targetLeft + 'px';
+      thumb.style.width = targetWidth + 'px';
+      // force reflow so the transition re-enables cleanly next time
+      void thumb.offsetWidth;
+      thumb.style.transition = '';
+      return;
+    }
+
+    thumb.style.transition = 'left 0.5s cubic-bezier(0.16,1,0.3,1), width 0.5s cubic-bezier(0.16,1,0.3,1)';
+    thumb.style.left = targetLeft + 'px';
+    thumb.style.width = targetWidth + 'px';
+  }
+
+  function switchPage(page){
+    document.getElementById('page-home').style.display = page==='home' ? 'block' : 'none';
+    document.getElementById('page-expenses').style.display = page==='expenses' ? 'block' : 'none';
+    document.getElementById('page-income').style.display = page==='income' ? 'block' : 'none';
+    document.getElementById('nav-home').classList.toggle('active', page==='home');
+    document.getElementById('nav-expenses').classList.toggle('active', page==='expenses');
+    document.getElementById('nav-income').classList.toggle('active', page==='income');
+    const activeBtn = document.getElementById('nav-' + page);
+    positionNavThumb(activeBtn, true);
+    if(page==='expenses') renderExpenses(); // re-render so the rise-up animation replays each visit
+    if(page==='income') renderIncome();
+  }
+
+  document.getElementById('nav-home').onclick = () => switchPage('home');
+  document.getElementById('nav-expenses').onclick = () => switchPage('expenses');
+  document.getElementById('nav-income').onclick = () => switchPage('income');
+  document.getElementById('simulate-payment-btn').onclick = () => simulatePayment();
+
+  function showSetupModal(){
+    const slot = document.getElementById('budget-modal-slot');
+    slot.innerHTML = `
+      <div class="fp-modal-overlay">
+        <div class="fp-modal">
+          <div class="fp-modal-title">Connect your Bulga backend</div>
+          <div class="fp-modal-sub">Paste your Railway server URL and API key so Bulga can pull your real FamPay transactions on every visit.</div>
+          <div class="fp-modal-input-wrap">
+            <input type="text" id="setup-url-input" placeholder="https://your-app.up.railway.app" style="font-family:'Inter',sans-serif; font-size:13px;" />
+          </div>
+          <div class="fp-modal-input-wrap">
+            <input type="text" id="setup-key-input" placeholder="Your API key" style="font-family:'Inter',sans-serif; font-size:13px;" />
+          </div>
+          <button class="fp-modal-btn" id="setup-submit">Connect</button>
+        </div>
+      </div>
+    `;
+    const urlInput = document.getElementById('setup-url-input');
+    const keyInput = document.getElementById('setup-key-input');
+    const btn = document.getElementById('setup-submit');
+    urlInput.focus();
+    btn.onclick = async () => {
+      const url = urlInput.value.trim();
+      const key = keyInput.value.trim();
+      if(!url || !key) return;
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
+      await saveApiConfig(url, key);
+      slot.innerHTML = '';
+      await startupSequence();
+    };
+  }
+
+  function showLoadError(message){
+    const slot = document.getElementById('budget-modal-slot');
+    slot.innerHTML = `
+      <div class="fp-modal-overlay">
+        <div class="fp-modal">
+          <div class="fp-modal-title">Couldn't reach your backend</div>
+          <div class="fp-modal-sub">${message}. Double check your Railway server is running, and that the URL/key are correct.</div>
+          <button class="fp-modal-btn" id="setup-retry">Try again</button>
+          <div class="fp-budget-edit" id="setup-reconfigure" style="text-align:center; margin-top:14px;">Re-enter URL/key</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('setup-retry').onclick = async () => {
+      document.getElementById('budget-modal-slot').innerHTML = '';
+      await startupSequence();
+    };
+    document.getElementById('setup-reconfigure').onclick = () => showSetupModal();
+  }
+
+  // Runs every time the app opens: load saved config, refresh from Gmail via
+  // the backend, then render everything with the latest data.
+  async function startupSequence(){
+    await loadApiConfig();
+
+    if(!API_BASE || !API_KEY){
+      showSetupModal();
+      renderHome(); renderExpenses(); renderIncome(); // render empty state underneath
+      return;
+    }
+
+    const ok = await refreshFromBackend();
+    if(!ok){
+      showLoadError(dataLoadError === 'not_configured' ? 'Backend not configured yet' : dataLoadError);
+      renderHome(); renderExpenses(); renderIncome();
+      return;
+    }
+
+    renderHome();
+    renderExpenses();
+    renderIncome();
+    positionNavThumb(document.getElementById('nav-home'), false);
+
+    await loadBudget();
+    if(userBudget === null){
+      showBudgetModal(false); // first-time budget ask, only after data has loaded
+    }
+    renderExpenses(); // re-render now that the budget bar can show
+  }
+
+  async function init(){
+    positionNavThumb(document.getElementById('nav-home'), false);
+    await startupSequence();
+  }
+
+  init();
+  window.addEventListener('resize', () => {
+    const activeBtn = document.querySelector('.fp-nav button.active');
+    if(activeBtn) positionNavThumb(activeBtn, false);
+    if(document.getElementById('mini-toggle-thumb')){ miniTogglePrevRect = null; positionMiniToggleThumb(false); }
+  });
+})();
+</script>
+
+</body>
+</html>
